@@ -151,45 +151,94 @@ const professores =[
         nome: "gabriel",
         disciplina: "ed. fisica",
         anoContratacao: 2023
-    },
-    {
-        id: 3,
-        nome: "leo",
-        disciplina: "quimica",
-        anoContratacao: 2017 
     }
 ]
+ 
 
-
-app.get("/professores", function(req, res){
-    const anoContratacao = req.query .nome
-   
-    if("!"){
+ 
+app.get("/professores", function (req, res) {
+    const anoContratacao = parseInt(req.query.anoContratacao)
+ 
+    if (!anoContratacao) {
         return res.json(professores)
     }
-    const profFiltrados = professores.filter(a => 
-        a.nome.toLowerCase().includes (nome.toLowerCase())
-    )
-
-    res.json(profFiltrados)
+ 
+    const professoresFiltrados = professores.filter(p => p.anoContratacao === anoContratacao)
+ 
+    res.json(professoresFiltrados)
 })
-
-app.delete("/professor/:id", function(req, res) {
+ 
+ 
+ 
+ 
+app.post("/professores", function (req, res) {
+    const nomeNovo = req.body.nome
+    const disciplinaNova = req.body.disciplina
+    const anoContratacaoNova = req.body.anoContratacao
+ 
+    if (!nomeNovo || !disciplinaNova || !anoContratacaoNova) {
+        return res.status(400).json({ erro: "nome, disciplina ou ano de contratação invalidos" })
+    }
+ 
+    
+    const novoProfessor = {
+        id: 3,
+        nome: nomeNovo,
+        disciplina: disciplinaNova,
+        anoContratacao: anoContratacaoNova
+    }  
+   
+    professores.push(novoProfessor)
+    res.status(201).send()
+})
+ 
+ 
+ 
+ 
+app.delete("/professores/:id", function (req, res) {
     const id = parseInt(req.params.id)
     const index = professores.findIndex(a => a.id === id)
-
-    if(index === -1){
-        return res.status(404).json("não encontrado")
+ 
+    if (index == -1) {
+        return res(404).json("não encontrado")
     }
-    const professorRemovido = professor.splice(index, 1)
-    return res.status(204).json("deletado com sucesso!")
-
+    
+    const professorRemovido = professores.splice(index, 1)
+    return res.status(204).json("professores deletado com sucesso")
+})
+ 
+ 
+ 
+ 
+app.put("/professores/:id", function (req, res) {
+    const id = parseInt(req.params.id)
+   
+    const { nome, disciplina, anoContratacao } = req.body
+ 
+ 
+    if (!nome || !disciplina || !anoContratacao) {
+        return res.status(400).json("nome, disciplina e ano de contratação são obrigatórios")
+    }
+ 
+    
+    const indexDoProfessor = professores.findIndex(a => a.id == id)
+ 
+    if (indexDoProfessor === -1) {
+        return res.status(404).json("aluno não encontrado")
+    }
+  
+    professores[indexDoProfessor].nome = nome
+    professores[indexDoProfessor].disciplina = disciplina
+    professores[indexDoProfessor].anoContratacao = anoContratacao
+ 
+    return res.json(professores[indexDoProfessor])
+ 
 })
 
-
-
-
-
+app.listen(3000, function(){
+    console.log("Servidor rodando na porta 3000!")
+})
+ 
 
 
 
@@ -202,24 +251,4 @@ app.delete("/professor/:id", function(req, res) {
 
 
  
-//Monitora/ Escuta a porta 3000
-app.listen(3000, function(){
-    console.log("Servidor rodando na porta 3000!")
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
  
